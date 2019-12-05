@@ -77,11 +77,11 @@ class Data:
                     matplotlib.patheffects.Stroke(linewidth=5, foreground="w"),
                     matplotlib.patheffects.Normal()])
                 txts.append(txt)
-
             return f, ax, sc, txts
+
         RS = 123456
         digits_proj = sklearn.manifold.TSNE(random_state=RS).fit_transform(self.data)
-        scatter(digits_proj, self.predict if self.labeled else 0)
+        scatter(digits_proj, self.predict if self.labeled else numpy.array([0]*len(self.data)))
 
         foo_fig = matplotlib.pyplot.gcf()
         foo_fig.savefig('demo.eps', format='eps', dpi=1000)
@@ -90,6 +90,7 @@ class Data:
 if __name__ == "__main__":
     test = Data()
     test.ReadData('data.csv')
+    # test.Draw()
     test.SelectTopN(10)
     result = test.KMeans(20)
     result.SelectTopN(10)
