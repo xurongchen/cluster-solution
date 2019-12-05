@@ -1,6 +1,11 @@
 import os,re
 import sklearn.cluster
+import sklearn.manifold
 
+import numpy
+import matplotlib.pyplot
+import matplotlib.patheffects
+import seaborn
 class Data:
     data = []
     dimensions = []
@@ -41,12 +46,51 @@ class Data:
 
     #TODO:PCA
 
-    #TODO:t-SNE
+    # We use t-SNE show high dimensions data...
+    def Draw(self):
+        seaborn.set_style('darkgrid')
+        seaborn.set_palette('muted')
+        seaborn.set_context("notebook", font_scale=1.5,
+                        rc={"lines.linewidth": 2.5})
+        colorCount = max(self.predict)+1 if self.labeled else 1
+        def scatter(x, colors):
+            # We choose a color palette with seaborn.
+            palette = numpy.array(seaborn.color_palette("hls", colorCount))
+
+            # We create a scatter plot.
+            f = matplotlib.pyplot.figure(figsize=(8, 8))
+            ax = matplotlib.pyplot.subplot(aspect='equal')
+            sc = ax.scatter(x[:,0], x[:,1], lw=0, s=20,
+                            c=palette[colors.astype(numpy.int)])
+            matplotlib.pyplot.xlim(-25, 25)
+            matplotlib.pyplot.ylim(-25, 25)
+            ax.axis('off')
+            ax.axis('tight')
+
+            # We add the labels for each digit.
+            txts = []
+            for i in range(colorCount):
+                # Position of each label.
+                xtext, ytext = numpy.median(x[colors == i, :], axis=0)
+                txt = ax.text(xtext, ytext, str(i), fontsize=34)
+                txt.set_path_effects([
+                    matplotlib.patheffects.Stroke(linewidth=5, foreground="w"),
+                    matplotlib.patheffects.Normal()])
+                txts.append(txt)
+
+            return f, ax, sc, txts
+        RS = 123456
+        digits_proj = sklearn.manifold.TSNE(random_state=RS).fit_transform(self.data)
+        scatter(digits_proj, self.predict if self.labeled else 0)
+
+        foo_fig = matplotlib.pyplot.gcf()
+        foo_fig.savefig('demo.eps', format='eps', dpi=1000)
+        matplotlib.pyplot.show()
 
 if __name__ == "__main__":
     test = Data()
     test.ReadData('data.csv')
     test.SelectTopN(10)
-    result = test.KMeans(10)
+    result = test.KMeans(20)
     result.SelectTopN(10)
-
+    result.Draw()
