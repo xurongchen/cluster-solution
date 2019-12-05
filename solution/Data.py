@@ -43,6 +43,45 @@ class Data:
         result.predict = clf.fit_predict(result.data)
         result.labeled = True
         return result
+    
+    def myKMeans(self,K):
+        result = Data()
+        result.data = self.data[:]
+        result.dimensions = self.dimensions[:]
+        
+        dataSet=np.array(result.data )
+        m = np.shape(dataSet)[0] 
+        n=len(result.dimensions)
+        #print(m,n)
+        centroids = np.zeros((K,n))
+        a=np.random.choice(a=m, size=K, replace=False, p=None)
+        for i in range(K):
+            centroids[i,:] =dataSet[a[i],:]
+        clusterChange = True 
+        clusterAssment = np.mat(np.zeros((m,2)))
+        while clusterChange:
+            clusterChange = False  
+            for i in range(m):
+                minDist=100000.0
+                minIndex=-1
+                
+                #遍历质心
+                for j in range(K):
+                    distance=np.fabs( centroids[j,:] - dataSet[i,: ]).sum(axis=0)
+                    if distance< minDist:
+                        minDist=distance
+                        minIndex=j
+                if clusterAssment[i,0] != minIndex:
+                    clusterChange = True
+                    clusterAssment[i,:] = minIndex,minDist
+            for j in range(K):
+                j_points= dataSet[ np.nonzero(clusterAssment[:,0].A == j) [0] ]  
+                centroids[j,:] = np.mean(j_points,axis=0) 
+        
+        for i in range(m):
+             result.predict[i]=int(clusterAssment[:,0][i][0])
+        result.labeled = True
+        return result
 
     #TODO:PCA
 
