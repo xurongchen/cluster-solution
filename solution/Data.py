@@ -49,16 +49,16 @@ class Data:
         result.data = self.data[:]
         result.dimensions = self.dimensions[:]
         
-        dataSet=np.array(result.data )
-        m = np.shape(dataSet)[0] 
+        dataSet =numpy.array(result.data)
+        m = numpy.shape(dataSet)[0] 
         n=len(result.dimensions)
         #print(m,n)
-        centroids = np.zeros((K,n))
-        a=np.random.choice(a=m, size=K, replace=False, p=None)
+        centroids = numpy.zeros((K,n))
+        a=numpy.random.choice(a=m, size=K, replace=False, p=None)
         for i in range(K):
             centroids[i,:] =dataSet[a[i],:]
         clusterChange = True 
-        clusterAssment = np.mat(np.zeros((m,2)))
+        clusterAssment = numpy.mat(numpy.zeros((m,2)))
         while clusterChange:
             clusterChange = False  
             for i in range(m):
@@ -67,7 +67,7 @@ class Data:
                 
                 #遍历质心
                 for j in range(K):
-                    distance=np.fabs( centroids[j,:] - dataSet[i,: ]).sum(axis=0)
+                    distance=numpy.fabs( centroids[j,:] - dataSet[i,: ]).sum(axis=0)
                     if distance< minDist:
                         minDist=distance
                         minIndex=j
@@ -75,9 +75,9 @@ class Data:
                     clusterChange = True
                     clusterAssment[i,:] = minIndex,minDist
             for j in range(K):
-                j_points= dataSet[ np.nonzero(clusterAssment[:,0].A == j) [0] ]  
-                centroids[j,:] = np.mean(j_points,axis=0) 
-        
+                j_points= dataSet[ numpy.nonzero(clusterAssment[:,0].A == j) [0] ]  
+                centroids[j,:] = numpy.mean(j_points,axis=0) 
+        result.predict = numpy.array([0]*len(result.data))
         for i in range(m):
              result.predict[i]=int(clusterAssment[:,0][i][0])
         result.labeled = True
@@ -131,6 +131,7 @@ if __name__ == "__main__":
     test.ReadData('data.csv')
     # test.Draw()
     test.SelectTopN(10)
-    result = test.KMeans(20)
+    # result = test.KMeans(20)
+    result = test.myKMeans(20)
     result.SelectTopN(10)
     result.Draw()
