@@ -1,6 +1,7 @@
 import os,re
 import sklearn.cluster
 import sklearn.manifold
+from sklearn.decomposition import PCA
 
 import numpy
 import matplotlib.pyplot
