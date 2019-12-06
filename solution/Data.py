@@ -140,6 +140,8 @@ if __name__ == "__main__":
     test.ReadData('data.csv')
     # test.Draw()
     test.SelectTopN(10)
+    #降到5维
+    test.pca(5)
     # result = test.KMeans(20)
     result = test.myKMeans(20)
     result.SelectTopN(10)
