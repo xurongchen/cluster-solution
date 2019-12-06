@@ -84,6 +84,15 @@ class Data:
         return result
 
     #TODO:PCA
+    def pca(self,N):
+    
+        dataSet =numpy.array(self.data)
+        #print(dataSet.shape)
+        pca=PCA(n_components=N)
+        pcaData=pca.fit_transform(dataSet)
+        #print(pcaData.shape)
+        self.data=pcaData.tolist()
+        
 
     # We use t-SNE show high dimensions data...
     def Draw(self):
