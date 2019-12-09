@@ -1,6 +1,7 @@
 import os,re
 import sklearn.cluster
 import sklearn.manifold
+from sklearn.decomposition import PCA
 
 import numpy
 import matplotlib.pyplot
@@ -104,7 +105,15 @@ class Data:
         result.labeled = True
         return result
 
-    #TODO:PCA
+
+    def pca(self,N):
+        dataSet =numpy.array(self.data)
+        #print(dataSet.shape)
+        pca=PCA(n_components=N)
+        pcaData=pca.fit_transform(dataSet)
+        #print(pcaData.shape)
+        self.data=pcaData.tolist()
+        
 
     # We use t-SNE show high dimensions data...
     def Draw(self):
@@ -184,9 +193,10 @@ if __name__ == "__main__":
     test.ReadData('data.csv')
     # test.Draw()
     test.SelectTopN(10)
-    result = test.KMeans(6)
-    # result = test.DBSCAN()
-    # result = test.myKMeans(20)
+    #降到5维
+    test.pca(5)
+    # result = test.KMeans(20)
+    result = test.myKMeans(20)
     result.SelectTopN(10)
     result.ShowLabelInfo()
     # result.Draw()
