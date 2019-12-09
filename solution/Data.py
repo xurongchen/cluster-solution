@@ -107,12 +107,15 @@ class Data:
 
 
     def pca(self,N):
-        dataSet =numpy.array(self.data)
+        result = Data()
+        pca = PCA(n_components=N)
+        dataSet = numpy.array(self.data)
         #print(dataSet.shape)
-        pca=PCA(n_components=N)
-        pcaData=pca.fit_transform(dataSet)
+        pcaData = pca.fit_transform(dataSet)
         #print(pcaData.shape)
-        self.data=pcaData.tolist()
+        result.data = pcaData.tolist()
+        result.dimensions = list(map(lambda x: '#{0}'.format(x), range(0,N)))
+        return result
         
 
     # We use t-SNE show high dimensions data...
@@ -194,9 +197,9 @@ if __name__ == "__main__":
     # test.Draw()
     test.SelectTopN(10)
     #降到5维
-    test.pca(5)
-    # result = test.KMeans(20)
-    result = test.myKMeans(20)
+    test = test.pca(5)
+    # result = test.KMeans(6)
+    result = test.myKMeans(6)
     result.SelectTopN(10)
     result.ShowLabelInfo()
-    # result.Draw()
+    result.Draw()
