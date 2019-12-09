@@ -6,10 +6,16 @@ import numpy
 import matplotlib.pyplot
 import matplotlib.patheffects
 import seaborn
+
+import sklearn.preprocessing
+
 class Data:
     data = []
     dimensions = []
     labeled = False
+    RunStandardScaler = False
+    RunNormalize = False
+
     def ReadData(self, filePath):
         if not os.path.isfile(filePath):
             raise FileNotFoundError('Data file not found!')
@@ -23,6 +29,10 @@ class Data:
             else:
                 self.data.append(tuple(map(int,line.strip().split(','))))
         fopen.close()
+        if self.RunStandardScaler:
+            self.data = sklearn.preprocessing.StandardScaler().fit_transform(self.data) 
+        if self.RunNormalize:
+            self.data = sklearn.preprocessing.normalize(self.data)
 
     def SelectTopN(self,N):
         id = 0
@@ -35,12 +45,23 @@ class Data:
                 print(item)
             id += 1
 
+    def DBSCAN(self,eps=3.4, min_samples=200):#(3,100) is good
+        result = Data()
+        result.data = self.data[:]
+        result.dimensions = self.dimensions[:]
+        clf = sklearn.cluster.DBSCAN(eps=eps,min_samples=min_samples)
+        result.predict = clf.fit_predict(result.data)
+        self.midResult = clf
+        result.labeled = True
+        return result
+
     def KMeans(self,K):
         result = Data()
         result.data = self.data[:]
         result.dimensions = self.dimensions[:]
         clf = sklearn.cluster.KMeans(n_clusters=K)
         result.predict = clf.fit_predict(result.data)
+        self.midResult = clf
         result.labeled = True
         return result
     
@@ -100,7 +121,10 @@ class Data:
             f = matplotlib.pyplot.figure(figsize=(8, 8))
             ax = matplotlib.pyplot.subplot(aspect='equal')
             sc = ax.scatter(x[:,0], x[:,1], lw=0, s=20,
-                            c=palette[colors.astype(numpy.int)])
+                                c=list(map( # This is to make the unclassified node black!
+                                        lambda x: palette[x] if x >= 0 else [0, 0, 0, 1],
+                                        colors.astype(numpy.int))))
+                            # c=map(Unclassified2Black,palette[colors.astype(numpy.int)]))
             matplotlib.pyplot.xlim(-25, 25)
             matplotlib.pyplot.ylim(-25, 25)
             ax.axis('off')
@@ -126,12 +150,43 @@ class Data:
         foo_fig.savefig('demo.eps', format='eps', dpi=1000)
         matplotlib.pyplot.show()
 
+    def ShowLabelInfo(self):
+        if not self.labeled:
+            print('No Labels yet.')
+        labelCount = max(self.predict) + 1
+        distribution = list()
+        for i in range(labelCount):
+            distribution.append(list())
+        for i in range(len(self.data)):
+            if self.predict[i]<0:
+                continue
+            distribution[self.predict[i]].append(self.data[i])
+        distributionInfo = dict()
+        distributionInfo['Num'] = list(map(len,distribution))
+        distributionInfo['Max'] = list(map(lambda x: list(map(max,list(zip(*x)))),distribution))
+        distributionInfo['Min'] = list(map(lambda x: list(map(min,list(zip(*x)))),distribution))
+        distributionInfo['Avg'] = list(map(lambda x: list(map(numpy.mean,list(zip(*x)))),distribution))
+        distributionInfo['Med'] = list(map(lambda x: list(map(numpy.median,list(zip(*x)))),distribution))
+        distributionInfo['Std'] = list(map(lambda x: list(map(numpy.std,list(zip(*x)))),distribution))
+        floatRound = lambda Xlist: list(map(lambda x: round(1.0*x,2), Xlist))
+        for (k,v) in distributionInfo.items():
+            if k=='Num':
+                continue
+            distributionInfo[k] = list(map(floatRound,v))
+        print('There are {0} labels.'.format(labelCount))
+        for i in range(labelCount):
+            print('Label {0}: Num:{1},\n Min:{2},\n Max:{3},\n Avg:{4},\n Med:{5},\n Std:{6}\n\n'.format(i + 1, distributionInfo['Num'][i], distributionInfo['Min'][i],
+                distributionInfo['Max'][i], distributionInfo['Avg'][i], distributionInfo['Med'][i], distributionInfo['Std'][i]))
+
 if __name__ == "__main__":
     test = Data()
+    test.RunNormalize = False
     test.ReadData('data.csv')
     # test.Draw()
     test.SelectTopN(10)
-    # result = test.KMeans(20)
-    result = test.myKMeans(20)
+    result = test.KMeans(6)
+    # result = test.DBSCAN()
+    # result = test.myKMeans(20)
     result.SelectTopN(10)
-    result.Draw()
+    result.ShowLabelInfo()
+    # result.Draw()
