@@ -114,7 +114,7 @@ class Data:
         pcaData = pca.fit_transform(dataSet)
         #print(pcaData.shape)
         result.data = pcaData.tolist()
-        result.dimensions = list(map(lambda x: '#{0}'.format(x), range(0,N)))
+        result.dimensions = list(map(lambda x: '#{0}'.format(x), range(0,len(result.data[0]))))
         return result
         
 
@@ -197,7 +197,7 @@ if __name__ == "__main__":
     # test.Draw()
     test.SelectTopN(10)
     #降到5维
-    test = test.pca(5)
+    test = test.pca(.9)
     # result = test.KMeans(6)
     result = test.myKMeans(6)
     result.SelectTopN(10)
