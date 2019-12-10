@@ -162,7 +162,7 @@ class Data:
         foo_fig.savefig('demo.eps', format='eps', dpi=1000)
         matplotlib.pyplot.show()
 
-    def ShowLabelInfo(self):
+    def ShowLabelInfo(self,output=True):
         if not self.labeled:
             print('No Labels yet.')
         labelCount = max(self.predict) + 1
@@ -173,22 +173,23 @@ class Data:
             if self.predict[i]<0:
                 continue
             distribution[self.predict[i]].append(self.data[i])
-        distributionInfo = dict()
-        distributionInfo['Num'] = list(map(len,distribution))
-        distributionInfo['Max'] = list(map(lambda x: list(map(max,list(zip(*x)))),distribution))
-        distributionInfo['Min'] = list(map(lambda x: list(map(min,list(zip(*x)))),distribution))
-        distributionInfo['Avg'] = list(map(lambda x: list(map(numpy.mean,list(zip(*x)))),distribution))
-        distributionInfo['Med'] = list(map(lambda x: list(map(numpy.median,list(zip(*x)))),distribution))
-        distributionInfo['Std'] = list(map(lambda x: list(map(numpy.std,list(zip(*x)))),distribution))
+        self.distributionInfo = dict()
+        self.distributionInfo['Num'] = list(map(len,distribution))
+        self.distributionInfo['Max'] = list(map(lambda x: list(map(max,list(zip(*x)))),distribution))
+        self.distributionInfo['Min'] = list(map(lambda x: list(map(min,list(zip(*x)))),distribution))
+        self.distributionInfo['Avg'] = list(map(lambda x: list(map(numpy.mean,list(zip(*x)))),distribution))
+        self.distributionInfo['Med'] = list(map(lambda x: list(map(numpy.median,list(zip(*x)))),distribution))
+        self.distributionInfo['Std'] = list(map(lambda x: list(map(numpy.std,list(zip(*x)))),distribution))
         floatRound = lambda Xlist: list(map(lambda x: round(1.0*x,2), Xlist))
-        for (k,v) in distributionInfo.items():
+        for (k,v) in self.distributionInfo.items():
             if k=='Num':
                 continue
-            distributionInfo[k] = list(map(floatRound,v))
-        print('There are {0} labels.'.format(labelCount))
-        for i in range(labelCount):
-            print('Label {0}: Num:{1},\n Min:{2},\n Max:{3},\n Avg:{4},\n Med:{5},\n Std:{6}\n\n'.format(i + 1, distributionInfo['Num'][i], distributionInfo['Min'][i],
-                distributionInfo['Max'][i], distributionInfo['Avg'][i], distributionInfo['Med'][i], distributionInfo['Std'][i]))
+            self.distributionInfo[k] = list(map(floatRound,v))
+        if output:
+            print('There are {0} labels.'.format(labelCount))
+            for i in range(labelCount):
+                print('Label {0}: Num:{1},\n Min:{2},\n Max:{3},\n Avg:{4},\n Med:{5},\n Std:{6}\n\n'.format(i + 1, self.distributionInfo['Num'][i], self.distributionInfo['Min'][i],
+                    self.distributionInfo['Max'][i], self.distributionInfo['Avg'][i], self.distributionInfo['Med'][i], self.distributionInfo['Std'][i]))
 
 if __name__ == "__main__":
     test = Data()
