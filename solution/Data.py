@@ -197,7 +197,7 @@ if __name__ == "__main__":
     # test.Draw()
     test.SelectTopN(10)
     #降到5维
-    test = test.pca(.9)
+    test = test.pca(.95)
     # result = test.KMeans(6)
     result = test.myKMeans(6)
     result.SelectTopN(10)
