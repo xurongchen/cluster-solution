@@ -2,11 +2,12 @@ from Data import Data
 import matplotlib.pyplot, numpy, matplotlib.pyplot
 
 from sklearn.neighbors import NearestNeighbors
-from sklearn.metrics import silhouette_score,calinski_harabasz_score
 
 testK = Data()
 testK.ReadData('data.csv')
 
+# Notice: pca will affect the DBSCAN a lot
+# testK = testK.pca(0.9)
 
 def getEsp(K_Neighbors,DiscardLast=0):
     neigh = NearestNeighbors(n_neighbors=K_Neighbors+1)
@@ -26,28 +27,16 @@ def getEsp(K_Neighbors,DiscardLast=0):
             return i,distances[i]
     return None
 
-def getSilhouetteScore(data,label):
-    if max(label) == 0:
-        return -2
-    removedData = list(filter(lambda x:x[1]>=0, zip(data,label)))
-    return silhouette_score(list(map(lambda x:x[0],removedData)),list(map(lambda x:x[1],removedData)))
-
-def getCalinskiHarabaszScore(data,label):
-    if max(label) == 0:
-        return -2
-    removedData = list(filter(lambda x:x[1]>=0, zip(data,label)))
-    return calinski_harabasz_score(list(map(lambda x:x[0],removedData)),list(map(lambda x:x[1],removedData)))
-
 
 for i in range(90,280,10):
 # for i in range(145,280,5):
 # for i in range(155,165,1):# 160 makes silhouette score max
     kn = i
     esp = getEsp(kn,DiscardLast=0.1)[1]
-    test = Data()
-    test.ReadData('data.csv')
+    test = testK.Copy()
+    # test.ReadData('data.csv')
     result = test.DBSCAN(eps=esp,min_samples=kn)
     result.ShowLabelInfo(output=False)
-    silScore = getSilhouetteScore(result.data,result.predict)
-    calScore = getCalinskiHarabaszScore(result.data,result.predict)
+    silScore = result.getScore(method='Silhouette')
+    calScore = result.getScore(method='CalinskiHarabasz')
     print('K:',kn,'ESP:{:.4f}'.format(esp),'SIL:{:.4f}'.format(silScore),'CAL:{:.4f}'.format(calScore),'CNT:',sum(result.distributionInfo['Num']),'LB:',len(result.distributionInfo['Num']),'LC',result.distributionInfo['Num'])

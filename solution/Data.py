@@ -2,7 +2,7 @@ import os,re
 import sklearn.cluster
 import sklearn.manifold
 from sklearn.decomposition import PCA
-
+from sklearn.metrics import silhouette_score,calinski_harabasz_score
 import numpy
 import matplotlib.pyplot
 import matplotlib.patheffects
@@ -11,12 +11,39 @@ import seaborn
 import sklearn.preprocessing
 
 class Data:
+    
+    @staticmethod
+    def getSilhouetteScore(data,label):
+        if max(label) == 0:
+            return -2
+        removedData = list(filter(lambda x:x[1]>=0, zip(data,label)))
+        return silhouette_score(list(map(lambda x:x[0],removedData)),list(map(lambda x:x[1],removedData)))
+
+    @staticmethod
+    def getCalinskiHarabaszScore(data,label):
+        if max(label) == 0:
+            return -2
+        removedData = list(filter(lambda x:x[1]>=0, zip(data,label)))
+        return calinski_harabasz_score(list(map(lambda x:x[0],removedData)),list(map(lambda x:x[1],removedData)))
+
+    def getScore(self,method='Silhouette'):
+        if method=='Silhouette':
+            return Data.getSilhouetteScore(self.data,self.predict)
+        elif method=='CalinskiHarabasz':
+            return Data.getCalinskiHarabaszScore(self.data,self.predict)
+        raise NameError('Method name error!')
+    
     data = []
     dimensions = []
     labeled = False
     RunStandardScaler = False
     RunNormalize = False
 
+    midResult = None
+    predict = None
+    distributionInfo = None
+    
+    
     def ReadData(self, filePath):
         if not os.path.isfile(filePath):
             raise FileNotFoundError('Data file not found!')
@@ -35,6 +62,18 @@ class Data:
         if self.RunNormalize:
             self.data = sklearn.preprocessing.normalize(self.data)
 
+    def Copy(self):
+        result = Data()
+        result.data = self.data
+        result.labeled = self.labeled
+        result.dimensions = self.dimensions
+        result.RunNormalize = self.RunNormalize
+        result.RunStandardScaler = self.RunStandardScaler
+        result.midResult = self.midResult
+        result.predict = self.predict
+        result.distributionInfo = self.distributionInfo
+        return result
+        
     def SelectTopN(self,N):
         id = 0
         for item in self.data:
@@ -61,6 +100,16 @@ class Data:
         result.data = self.data[:]
         result.dimensions = self.dimensions[:]
         clf = sklearn.cluster.KMeans(n_clusters=K)
+        result.predict = clf.fit_predict(result.data)
+        self.midResult = clf
+        result.labeled = True
+        return result
+
+    def MiniBatchKMeans(self,K):
+        result = Data()
+        result.data = self.data[:]
+        result.dimensions = self.dimensions[:]
+        clf = sklearn.cluster.MiniBatchKMeans(n_clusters=K)
         result.predict = clf.fit_predict(result.data)
         self.midResult = clf
         result.labeled = True
@@ -112,7 +161,7 @@ class Data:
         dataSet = numpy.array(self.data)
         #print(dataSet.shape)
         pcaData = pca.fit_transform(dataSet)
-        #print(pcaData.shape)
+        print('Size to {}'.format(pcaData.shape))
         result.data = pcaData.tolist()
         result.dimensions = list(map(lambda x: '#{0}'.format(x), range(0,len(result.data[0]))))
         return result
