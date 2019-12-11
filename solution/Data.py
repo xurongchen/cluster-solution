@@ -2,7 +2,7 @@ import os,re
 import sklearn.cluster
 import sklearn.manifold
 from sklearn.decomposition import PCA
-from sklearn.metrics import silhouette_score,calinski_harabasz_score
+from sklearn.metrics import silhouette_score,calinski_harabasz_score,davies_bouldin_score
 import numpy
 import matplotlib.pyplot
 import matplotlib.patheffects
@@ -20,6 +20,13 @@ class Data:
         return silhouette_score(list(map(lambda x:x[0],removedData)),list(map(lambda x:x[1],removedData)))
 
     @staticmethod
+    def getDaviesBouldinScore(data,label):
+        if max(label) == 0:
+            return -2
+        removedData = list(filter(lambda x:x[1]>=0, zip(data,label)))
+        return davies_bouldin_score(list(map(lambda x:x[0],removedData)),list(map(lambda x:x[1],removedData)))
+
+    @staticmethod
     def getCalinskiHarabaszScore(data,label):
         if max(label) == 0:
             return -2
@@ -31,6 +38,8 @@ class Data:
             return Data.getSilhouetteScore(self.data,self.predict)
         elif method=='CalinskiHarabasz':
             return Data.getCalinskiHarabaszScore(self.data,self.predict)
+        elif method=='DaviesBouldin':
+            return Data.getDaviesBouldinScore(self.data,self.predict)
         raise NameError('Method name error!')
     
     data = []

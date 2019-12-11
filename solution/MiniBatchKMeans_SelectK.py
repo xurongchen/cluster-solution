@@ -11,7 +11,8 @@ for k in range(1,TestUpperBound):
     result.ShowLabelInfo(output=False)
     silScore = result.getScore(method='Silhouette')
     calScore = result.getScore(method='CalinskiHarabasz')
-    print('K:',k,'SIL:{:.4f}'.format(silScore),'CAL:{:.4f}'.format(calScore),'CNT:',sum(result.distributionInfo['Num']),'LC',result.distributionInfo['Num'])
+    davScore = result.getScore(method='DaviesBouldin')
+    print('K:',k,'SIL:{:.4f}'.format(silScore),'CAL:{:.4f}'.format(calScore),'DAV:{:.4f}'.format(davScore),'CNT:',sum(result.distributionInfo['Num']),'LC',result.distributionInfo['Num'])
     SSE.append(testK.midResult.inertia_)
 
 x = range(1,TestUpperBound)

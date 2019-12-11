@@ -28,8 +28,8 @@ def getEsp(K_Neighbors,DiscardLast=0):
     return None
 
 
-for i in range(90,280,10):
-# for i in range(145,280,5):
+# for i in range(90,280,10):
+for i in range(145,200,5):
 # for i in range(155,165,1):# 160 makes silhouette score max
     kn = i
     esp = getEsp(kn,DiscardLast=0.1)[1]
@@ -38,5 +38,6 @@ for i in range(90,280,10):
     result = test.DBSCAN(eps=esp,min_samples=kn)
     result.ShowLabelInfo(output=False)
     silScore = result.getScore(method='Silhouette')
+    davScore = result.getScore(method='DaviesBouldin')
     calScore = result.getScore(method='CalinskiHarabasz')
-    print('K:',kn,'ESP:{:.4f}'.format(esp),'SIL:{:.4f}'.format(silScore),'CAL:{:.4f}'.format(calScore),'CNT:',sum(result.distributionInfo['Num']),'LB:',len(result.distributionInfo['Num']),'LC',result.distributionInfo['Num'])
+    print('K:',kn,'ESP:{:.4f}'.format(esp),'SIL:{:.4f}'.format(silScore),'CAL:{:.4f}'.format(calScore),'DAV:{:.4f}'.format(davScore),'CNT:',sum(result.distributionInfo['Num']),'LB:',len(result.distributionInfo['Num']),'LC',result.distributionInfo['Num'])
