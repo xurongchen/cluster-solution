@@ -248,7 +248,17 @@ class Data:
             for i in range(labelCount):
                 print('Label {0}: Num:{1},\n Min:{2},\n Max:{3},\n Avg:{4},\n Med:{5},\n Std:{6}\n\n'.format(i + 1, self.distributionInfo['Num'][i], self.distributionInfo['Min'][i],
                     self.distributionInfo['Max'][i], self.distributionInfo['Avg'][i], self.distributionInfo['Med'][i], self.distributionInfo['Std'][i]))
-
+        return labelCount
+    
+    def fx(result,labelCount):
+        #统计结果中每个老师的学生类别分布
+        teacher={'1':[0]*labelCount,'2':[0]*labelCount,'3':[0]*labelCount}
+        for i in range(len(result.data)):
+            teacherid=str(result.data[i][0])
+            teacher[teacherid][result.predict[i]]+=1
+        for i in ['1','2','3']:
+            print('teacher_id:',i,'comments_distri:',teacher[i])
+    
 if __name__ == "__main__":
     test = Data()
     test.RunNormalize = False
@@ -260,5 +270,6 @@ if __name__ == "__main__":
     # result = test.KMeans(6)
     result = test.myKMeans(6)
     result.SelectTopN(10)
-    result.ShowLabelInfo()
+    labelCount=result.ShowLabelInfo()
+    fx(result,labelCount)
     result.Draw()
