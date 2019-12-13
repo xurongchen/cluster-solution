@@ -170,7 +170,7 @@ class Data:
         dataSet = numpy.array(self.data)
         #print(dataSet.shape)
         pcaData = pca.fit_transform(dataSet)
-        print('Size to {}'.format(pcaData.shape))
+        # print('Size to {}'.format(pcaData.shape))
         result.data = pcaData.tolist()
         result.dimensions = list(map(lambda x: '#{0}'.format(x), range(0,len(result.data[0]))))
         return result

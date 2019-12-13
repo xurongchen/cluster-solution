@@ -4,6 +4,7 @@ import matplotlib.pyplot
 TestUpperBound = 15
 test = Data()
 test.ReadData('data.csv')
+test = test.pca(0.95)
 SSE = [] # sum of the squared errors
 for k in range(1,TestUpperBound):
     testK = test.Copy()

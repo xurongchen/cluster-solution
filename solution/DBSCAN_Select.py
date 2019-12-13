@@ -7,7 +7,7 @@ testK = Data()
 testK.ReadData('data.csv')
 
 # Notice: pca will affect the DBSCAN a lot
-# testK = testK.pca(0.9)
+testK = testK.pca(0.95)
 
 def getEsp(K_Neighbors,DiscardLast=0):
     neigh = NearestNeighbors(n_neighbors=K_Neighbors+1)
@@ -28,8 +28,8 @@ def getEsp(K_Neighbors,DiscardLast=0):
     return None
 
 
-# for i in range(90,280,10):
-for i in range(145,200,5):
+for i in range(90,280,10):
+# for i in range(145,200,5):
 # for i in range(155,165,1):# 160 makes silhouette score max
     kn = i
     esp = getEsp(kn,DiscardLast=0.1)[1]

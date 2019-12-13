@@ -4,10 +4,12 @@ import matplotlib.pyplot
 
 SSE = [] # sum of the squared errors
 TestUpperBound = 15
+test = Data()
+test.ReadData('data.csv')
+# test = test.pca(0.95)
 for k in range(1,TestUpperBound):
     # print('Now @ k = {0}'.format(k))
-    testK = Data()
-    testK.ReadData('data.csv')
+    testK = test.Copy()
     result = testK.KMeans(k)
     result.ShowLabelInfo(output=False)
     silScore = result.getScore(method='Silhouette')
