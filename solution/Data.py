@@ -248,7 +248,8 @@ class Data:
             for i in range(labelCount):
                 print('Label {0}: Num:{1},\n Min:{2},\n Max:{3},\n Avg:{4},\n Med:{5},\n Std:{6}\n\n'.format(i + 1, self.distributionInfo['Num'][i], self.distributionInfo['Min'][i],
                     self.distributionInfo['Max'][i], self.distributionInfo['Avg'][i], self.distributionInfo['Med'][i], self.distributionInfo['Std'][i]))
-
+        return labelCount
+    
 if __name__ == "__main__":
     test = Data()
     test.RunNormalize = False
@@ -260,5 +261,5 @@ if __name__ == "__main__":
     # result = test.KMeans(6)
     result = test.myKMeans(6)
     result.SelectTopN(10)
-    result.ShowLabelInfo()
+    labelCount=result.ShowLabelInfo()
     result.Draw()
